@@ -1,0 +1,73 @@
+-- This file has been generated from package.yaml by hpack version 0.28.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: cdbddf125e2027cb0c7c2c5adb475b130d102fd7fc6cc3a0b2cc2058a29b9747
+
+name:           minerush-restapi
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/panavtec/minerush-restapi#readme>
+homepage:       https://github.com/panavtec/minerush-restapi#readme
+bug-reports:    https://github.com/panavtec/minerush-restapi/issues
+author:         Christian Panadero
+maintainer:     panavtec@gmail.com
+copyright:      2018 Christian Panadero
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+extra-source-files:
+    ChangeLog.md
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/panavtec/minerush-restapi
+
+library
+  exposed-modules:
+      Lib
+  other-modules:
+      Paths_minerush_restapi
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , aeson
+    , servant-server
+    , text
+    , time
+    , wai
+    , warp
+  default-language: Haskell2010
+
+executable minerush-restapi-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_minerush_restapi
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , minerush-restapi
+    , servant
+    , text
+    , time
+  default-language: Haskell2010
+
+test-suite minerush-restapi-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_minerush_restapi
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , minerush-restapi
+    , servant
+    , text
+    , time
+  default-language: Haskell2010
