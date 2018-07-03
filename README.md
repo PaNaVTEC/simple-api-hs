@@ -9,7 +9,7 @@ Christian Panadero Martinez - <a href="http://panavtec.me">http://panavtec.me</a
 License
 =======
 
-    Copyright 2015 Christian Panadero Martinez
+    Copyright 2018 Christian Panadero Martinez
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
