@@ -2,6 +2,7 @@
 
 module Data where
 
+import           Data.Aeson.Types
 import           Data.Time
 import           GHC.Generics
 
@@ -10,6 +11,7 @@ data User = User
   , ki                :: Int
   , registration_date :: Day
   } deriving (Eq, Show, Generic)
+instance ToJSON User
 
 users :: [User]
 users =

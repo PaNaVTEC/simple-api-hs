@@ -1,18 +1,11 @@
 {-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE DeriveGeneric     #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators     #-}
 
 module Routes ( routes, APIEndpoints ) where
 
 import           Data
-import           Data.Aeson.Types
 import           Data.List
-import           Data.Text
-import           Data.Time
-import           GHC.Generics
-import           Network.Wai
-import           Network.Wai.Handler.Warp
 import           Servant
 
 type GetJson = Get '[JSON]
@@ -39,8 +32,6 @@ instance FromHttpApiData SortBy where
   parseQueryParam "name" = Right Name
   parseQueryParam _      = Left $ "Invalid parameter"
 
-instance ToJSON User
-
 allUsers :: Handler [User]
 allUsers = return users
 
@@ -53,5 +44,5 @@ usersSortedByKi :: Handler [User]
 usersSortedByKi = return (sortOn ki users)
 
 userByName :: String -> Handler (Maybe User)
-userByName userName = return $ Data.List.find byUserName users
+userByName userName = return $ find byUserName users
   where byUserName user = name user == userName
