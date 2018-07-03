@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ef2114b95211b643bc866b664314b296614e1a2b54f08ddc0c9983e25b431b5c
+-- hash: 973114137b1018a685ff692993a2618442eb57b099409cabbb4030acaf67a975
 
 name:           simple-api-hs
 version:        0.1.0.0
@@ -36,6 +36,8 @@ library
   build-depends:
       aeson
     , base >=4.7 && <5
+    , persistent
+    , persistent-mongoDB
     , servant-server
     , text
     , time
@@ -53,6 +55,8 @@ executable simple-api-hs-exe
   build-depends:
       aeson
     , base >=4.7 && <5
+    , persistent
+    , persistent-mongoDB
     , servant-server
     , simple-api-hs
     , text
@@ -72,6 +76,8 @@ test-suite simple-api-hs-test
   build-depends:
       aeson
     , base >=4.7 && <5
+    , persistent
+    , persistent-mongoDB
     , servant-server
     , simple-api-hs
     , text

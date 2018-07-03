@@ -27,6 +27,8 @@ dependencies:
 - time
 - wai
 - warp
+- persistent
+- persistent-mongoDB
 
 library:
   source-dirs: src
