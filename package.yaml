@@ -1,6 +1,6 @@
-name:                minerush-restapi
+name:                simple-api-hs
 version:             0.1.0.0
-github:              "panavtec/minerush-restapi"
+github:              "panavtec/simple-api-hs"
 license:             BSD3
 author:              "Christian Panadero"
 maintainer:          "panavtec@gmail.com"
@@ -17,7 +17,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/panavtec/minerush-restapi#readme>
+description:         Please see the README on GitHub at <https://github.com/panavtec/simple-api-hs#readme>
 
 dependencies:
 - base >= 4.7 && < 5
@@ -32,7 +32,7 @@ library:
   source-dirs: src
 
 executables:
-  minerush-restapi-exe:
+  simple-api-hs-exe:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
@@ -40,10 +40,10 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - minerush-restapi
+    - simple-api-hs
 
 tests:
-  minerush-restapi-test:
+  simple-api-hs-test:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
@@ -51,4 +51,4 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - minerush-restapi
+    - simple-api-hs

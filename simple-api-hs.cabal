@@ -2,13 +2,13 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cdbddf125e2027cb0c7c2c5adb475b130d102fd7fc6cc3a0b2cc2058a29b9747
+-- hash: ef2114b95211b643bc866b664314b296614e1a2b54f08ddc0c9983e25b431b5c
 
-name:           minerush-restapi
+name:           simple-api-hs
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/panavtec/minerush-restapi#readme>
-homepage:       https://github.com/panavtec/minerush-restapi#readme
-bug-reports:    https://github.com/panavtec/minerush-restapi/issues
+description:    Please see the README on GitHub at <https://github.com/panavtec/simple-api-hs#readme>
+homepage:       https://github.com/panavtec/simple-api-hs#readme
+bug-reports:    https://github.com/panavtec/simple-api-hs/issues
 author:         Christian Panadero
 maintainer:     panavtec@gmail.com
 copyright:      2018 Christian Panadero
@@ -22,18 +22,20 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/panavtec/minerush-restapi
+  location: https://github.com/panavtec/simple-api-hs
 
 library
   exposed-modules:
+      Data
       Lib
+      Routes
   other-modules:
-      Paths_minerush_restapi
+      Paths_simple_api_hs
   hs-source-dirs:
       src
   build-depends:
-      base >=4.7 && <5
-    , aeson
+      aeson
+    , base >=4.7 && <5
     , servant-server
     , text
     , time
@@ -41,33 +43,39 @@ library
     , warp
   default-language: Haskell2010
 
-executable minerush-restapi-exe
+executable simple-api-hs-exe
   main-is: Main.hs
   other-modules:
-      Paths_minerush_restapi
+      Paths_simple_api_hs
   hs-source-dirs:
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
-    , minerush-restapi
-    , servant
+      aeson
+    , base >=4.7 && <5
+    , servant-server
+    , simple-api-hs
     , text
     , time
+    , wai
+    , warp
   default-language: Haskell2010
 
-test-suite minerush-restapi-test
+test-suite simple-api-hs-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Paths_minerush_restapi
+      Paths_simple_api_hs
   hs-source-dirs:
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
-    , minerush-restapi
-    , servant
+      aeson
+    , base >=4.7 && <5
+    , servant-server
+    , simple-api-hs
     , text
     , time
+    , wai
+    , warp
   default-language: Haskell2010
