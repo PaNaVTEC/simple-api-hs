@@ -27,6 +27,9 @@ dependencies:
 - time
 - wai
 - warp
+- mtl
+- transformers
+- postgresql-simple
 
 library:
   source-dirs: src

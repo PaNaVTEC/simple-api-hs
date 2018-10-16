@@ -4,21 +4,22 @@ module Data where
 
 import           Data.Aeson.Types
 import           Data.Time
+import           Database.PostgreSQL.Simple.FromRow
+import           Database.PostgreSQL.Simple.ToField
+import           Database.PostgreSQL.Simple.ToRow
 import           GHC.Generics
 
 data User = User
   { name              :: String
   , ki                :: Int
-  , registration_date :: Day
+  , registration_date :: UTCTime
   } deriving (Eq, Show, Generic)
 instance ToJSON User
+instance FromRow User where
+  fromRow = User <$> field <*> field <*> field
 
-users :: [User]
-users =
-    [ User "Goku"         9001 (fromGregorian 1683 3 1)
-    , User "Vegeta"       9000 (fromGregorian 1905 12 1)
-    , User "Gohan"        5000 (fromGregorian 0195 2 21)
-    , User "Piccolo"      4500 (fromGregorian 1925 2 20)
-    , User "Krillin"      3500 (fromGregorian 1905 2 22)
-    , User "Tien Shinhan" 3000 (fromGregorian 1905 2 21)
-    ]
+instance ToRow User where
+  toRow user = [
+    toField . name $ user,
+    toField . ki $ user,
+    toField . registration_date $ user]
