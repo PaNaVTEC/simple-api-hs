@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators     #-}
 
@@ -26,7 +27,7 @@ type APIEndpoints =
   -- /user/:username
   :<|> "user" :> Capture "username" String :> GetJson (Maybe User)
 
-routes :: ServerT APIEndpoints AppM
+routes :: (MonadReader Connection m, MonadDb m) => ServerT APIEndpoints m
 routes = allUsers :<|> usersBy :<|> usersSortedByKi :<|> userByName
 
 data SortBy = Ki | Name
@@ -35,12 +36,12 @@ instance FromHttpApiData SortBy where
   parseQueryParam "name" = Right Name
   parseQueryParam _      = Left $ "Invalid parameter"
 
-allUsers :: AppM [User]
+allUsers :: (MonadReader Connection m, MonadDb m) => m [User]
 allUsers = do
   conn <- ask
-  liftIO $ query_ conn "SELECT * FROM users"
+  runQuery conn "SELECT * FROM users"
 
-usersBy :: Maybe SortBy -> AppM [User]
+usersBy :: (MonadReader Connection m, MonadDb m) => Maybe SortBy -> m [User]
 usersBy Nothing     = allUsers
 usersBy (Just Ki)   = do
   users <- allUsers
@@ -49,12 +50,12 @@ usersBy (Just Name) = do
   users <- allUsers
   return (sortOn name users)
 
-usersSortedByKi :: AppM [User]
+usersSortedByKi :: (MonadReader Connection m, MonadDb m) => m [User]
 usersSortedByKi = do
   users <- allUsers
   return (sortOn ki users)
 
-userByName :: String -> AppM (Maybe User)
+userByName :: (MonadReader Connection m, MonadDb m) => String -> m (Maybe User)
 userByName userName = do
   users <- allUsers
   return $ find byUserName users
