@@ -1,13 +1,15 @@
-{-# LANGUAGE DefaultSignatures    #-}
-{-# LANGUAGE DeriveGeneric        #-}
-{-# LANGUAGE FlexibleInstances    #-}
-{-# LANGUAGE InstanceSigs         #-}
-{-# LANGUAGE OverloadedStrings    #-}
-{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE DefaultSignatures          #-}
+{-# LANGUAGE DeriveGeneric              #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE GADTs                      #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE InstanceSigs               #-}
+{-# LANGUAGE StandaloneDeriving         #-}
 
 module Data where
 
 --import           Control.Monad.Trans
+import           Control.Monad.Except
 import           Control.Monad.Reader
 import           Data.Aeson.Types
 import           Data.Time
@@ -16,6 +18,7 @@ import           Database.PostgreSQL.Simple.FromRow
 import           Database.PostgreSQL.Simple.ToField
 import           Database.PostgreSQL.Simple.ToRow
 import           GHC.Generics
+import           Servant
 
 data User = User
   { name              :: String
@@ -32,18 +35,23 @@ instance ToRow User where
     toField . ki $ user,
     toField . registration_date $ user]
 
+instance MonadDb m => MonadDb (ReaderT r m)
+instance MonadDb m => MonadDb (ExceptT r m)
+
+deriving instance MonadDb Handler
+
 class Monad m => MonadDb m where
   runQuery :: Connection -> Query -> m [User]
 
---  default runQuery :: (MonadTrans t, MonadDb m', m ~ t m') => Query -> m [User]
---  runQuery = lift . runQuery
+  default runQuery :: (MonadTrans t, MonadDb m', m ~ t m') => Connection -> Query -> m [User]
+  runQuery x y = lift $ runQuery x y
 
 --  default runCommand :: (MonadTrans t, MonadDatabase m', m ~ t m') => Command -> m ()
 --  runCommand = lift . runCommand
 
-instance (Monad m, MonadIO m) => MonadDb m where
-  runQuery :: Connection -> Query -> m [User]
-  runQuery conn sql = liftIO $ query_ conn sql
+instance MonadDb IO where
+  runQuery :: Connection -> Query -> IO [User]
+  runQuery = query_
 
 --instance MonadDb m => MonadDb (ReaderT r m) where
 --  runQuery :: Connection -> Query -> ReaderT r m [User]
