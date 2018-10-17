@@ -12,7 +12,7 @@ import           Database.PostgreSQL.Simple
 import           Servant
 
 type GetJson = Get '[JSON]
-type AppM = ReaderT Connection Handler
+type AppM m = ReaderT Connection m
 
 type APIEndpoints =
   -- /users
