@@ -12,11 +12,11 @@ startApp = run 8081 app
     app = serve proxy $ hoistServer proxy nt routes
     proxy = (Proxy :: Proxy APIEndpoints)
 
-nt :: AppM a -> Handler a
+nt :: AppT a -> Handler a
 nt app = do
   conn <- liftIO $ connect defaultConnectInfo
                 { connectDatabase = "sample"
                 , connectUser     = "sample"
                 , connectPassword = "sample"
                 }
-  runReaderT app conn
+  runReaderT (runAppM app) conn
