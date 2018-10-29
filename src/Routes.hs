@@ -1,18 +1,32 @@
+{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators     #-}
+{-# LANGUAGE FlexibleInstances #-}
 
-module Routes ( routes, APIEndpoints, AppM ) where
+module Routes ( routes, APIEndpoints, AppM(..), AppT ) where
 
 import           Control.Monad.Reader
+import Control.Monad.Trans.Except
 import           Data
 import           Data.List
 import           Database.PostgreSQL.Simple
 import           Servant
 
 type GetJson = Get '[JSON]
-type AppM = ReaderT Connection Handler
+
+type AppT a = AppM Handler a
+newtype AppM m a = AppM {
+  runAppM :: ReaderT Connection m a
+} deriving (Functor, Applicative, Monad, MonadReader Connection, MonadIO, MonadDb)
+
+instance MonadTrans AppM where
+  lift :: Monad m => m a -> AppM m a
+  lift ma = AppM . lift $ ma
 
 type APIEndpoints =
   -- /users

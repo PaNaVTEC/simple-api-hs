@@ -1,8 +1,10 @@
--- This file has been generated from package.yaml by hpack version 0.28.2.
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b871f9be58327e4122e16fb9bddd53bd48fc93935fb386dbdf29f95aaf1d9724
+-- hash: 87586f8733f67486aaaa5590f22765a0d0ca7132b04774ec1134269e989a68ea
 
 name:           simple-api-hs
 version:        0.1.0.0
@@ -15,10 +17,9 @@ copyright:      2018 Christian Panadero
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
-cabal-version:  >= 1.10
 extra-source-files:
-    ChangeLog.md
     README.md
+    ChangeLog.md
 
 source-repository head
   type: git
