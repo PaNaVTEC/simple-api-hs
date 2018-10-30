@@ -1,10 +1,8 @@
-cabal-version: 1.12
-
--- This file has been generated from package.yaml by hpack version 0.31.0.
+-- This file has been generated from package.yaml by hpack version 0.28.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 87586f8733f67486aaaa5590f22765a0d0ca7132b04774ec1134269e989a68ea
+-- hash: 6dcb759a3d3091921cc6452d67ee13d482f4e5f1ad40fb9999b9e7bc7162f109
 
 name:           simple-api-hs
 version:        0.1.0.0
@@ -17,9 +15,10 @@ copyright:      2018 Christian Panadero
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
+cabal-version:  >= 1.10
 extra-source-files:
-    README.md
     ChangeLog.md
+    README.md
 
 source-repository head
   type: git
@@ -37,6 +36,7 @@ library
   build-depends:
       aeson
     , base >=4.7 && <5
+    , hspec
     , mtl
     , postgresql-simple
     , servant-server
@@ -57,6 +57,7 @@ executable simple-api-hs-exe
   build-depends:
       aeson
     , base >=4.7 && <5
+    , hspec
     , mtl
     , postgresql-simple
     , servant-server
@@ -72,6 +73,7 @@ test-suite simple-api-hs-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      ServantSpec
       Paths_simple_api_hs
   hs-source-dirs:
       test
@@ -79,6 +81,9 @@ test-suite simple-api-hs-test
   build-depends:
       aeson
     , base >=4.7 && <5
+    , hspec
+    , hspec-wai
+    , hspec-wai-json
     , mtl
     , postgresql-simple
     , servant-server

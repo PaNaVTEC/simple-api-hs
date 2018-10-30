@@ -1,6 +1,7 @@
 module Lib ( startApp ) where
 
 import           Control.Monad.Reader
+import           Data
 import           Database.PostgreSQL.Simple
 import           Network.Wai.Handler.Warp
 import           Routes
@@ -14,9 +15,12 @@ startApp = run 8081 app
 
 nt :: AppT a -> Handler a
 nt app = do
-  conn <- liftIO $ connect defaultConnectInfo
+  conn <- liftIO prodConn
+  runReaderT (runAppM app) conn
+
+prodConn :: IO Connection
+prodConn = connect defaultConnectInfo
                 { connectDatabase = "sample"
                 , connectUser     = "sample"
                 , connectPassword = "sample"
                 }
-  runReaderT (runAppM app) conn
