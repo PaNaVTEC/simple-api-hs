@@ -10,7 +10,7 @@ import           Test.Hspec.Wai.JSON
 main :: IO ()
 main = hspec $ spec
 
-spec = with (return app) $ do
+spec = with (return $ app undefined) $ do
   describe "GET users" $ do
-    it "respons" $ do
+    it "responds" $ do
       get "/users" `shouldRespondWith` 200
