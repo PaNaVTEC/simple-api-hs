@@ -1,32 +1,27 @@
-{-# LANGUAGE StandaloneDeriving #-}
-{-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE DeriveFunctor              #-}
+{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE FlexibleInstances          #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE FlexibleContexts  #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeOperators     #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE InstanceSigs               #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE StandaloneDeriving         #-}
+{-# LANGUAGE TypeOperators              #-}
 
 module Routes ( routes, APIEndpoints, AppM(..), AppT ) where
 
 import           Control.Monad.Reader
-import Control.Monad.Trans.Except
+import           Control.Monad.Trans.Except
 import           Data
 import           Data.List
-import           Database.PostgreSQL.Simple
 import           Servant
 
 type GetJson = Get '[JSON]
 
 type AppT a = AppM Handler a
 newtype AppM m a = AppM {
-  runAppM :: ReaderT Connection m a
-} deriving (Functor, Applicative, Monad, MonadReader Connection, MonadIO, MonadDb)
-
-instance MonadTrans AppM where
-  lift :: Monad m => m a -> AppM m a
-  lift ma = AppM . lift $ ma
+  runAppM :: DbContext m a
+} deriving (Functor, Applicative, Monad, MonadIO, MonadDb)
 
 type APIEndpoints =
   -- /users
@@ -41,7 +36,7 @@ type APIEndpoints =
   -- /user/:username
   :<|> "user" :> Capture "username" String :> GetJson (Maybe User)
 
-routes :: (MonadReader Connection m, MonadDb m) => ServerT APIEndpoints m
+routes :: MonadDb m => ServerT APIEndpoints m
 routes = allUsers :<|> usersBy :<|> usersSortedByKi :<|> userByName
 
 data SortBy = Ki | Name
@@ -50,12 +45,10 @@ instance FromHttpApiData SortBy where
   parseQueryParam "name" = Right Name
   parseQueryParam _      = Left $ "Invalid parameter"
 
-allUsers :: (MonadReader Connection m, MonadDb m) => m [User]
-allUsers = do
-  conn <- ask
-  runQuery conn "SELECT * FROM users"
+allUsers :: MonadDb m => m [User]
+allUsers = runQuery QueryAll
 
-usersBy :: (MonadReader Connection m, MonadDb m) => Maybe SortBy -> m [User]
+usersBy :: MonadDb m => Maybe SortBy -> m [User]
 usersBy Nothing     = allUsers
 usersBy (Just Ki)   = do
   users <- allUsers
@@ -64,12 +57,12 @@ usersBy (Just Name) = do
   users <- allUsers
   return (sortOn name users)
 
-usersSortedByKi :: (MonadReader Connection m, MonadDb m) => m [User]
+usersSortedByKi :: MonadDb m => m [User]
 usersSortedByKi = do
   users <- allUsers
   return (sortOn ki users)
 
-userByName :: (MonadReader Connection m, MonadDb m) => String -> m (Maybe User)
+userByName :: MonadDb m => String -> m (Maybe User)
 userByName userName = do
   users <- allUsers
   return $ find byUserName users

@@ -30,6 +30,7 @@ dependencies:
 - mtl
 - transformers
 - postgresql-simple
+- hspec
 
 library:
   source-dirs: src
@@ -55,3 +56,6 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - simple-api-hs
+    - hspec
+    - hspec-wai
+    - hspec-wai-json

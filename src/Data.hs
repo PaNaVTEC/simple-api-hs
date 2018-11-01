@@ -1,17 +1,18 @@
+{-# LANGUAGE DefaultSignatures          #-}
+{-# LANGUAGE DeriveGeneric              #-}
+{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE GADTs                      #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE StandaloneDeriving #-}
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE DefaultSignatures    #-}
-{-# LANGUAGE DeriveGeneric        #-}
-{-# LANGUAGE FlexibleInstances    #-}
-{-# LANGUAGE InstanceSigs         #-}
-{-# LANGUAGE OverloadedStrings    #-}
+{-# LANGUAGE InstanceSigs               #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE StandaloneDeriving         #-}
 
 module Data where
 
+import           Control.Monad.Reader
 import           Control.Monad.Trans
 import           Control.Monad.Trans.Except
-import           Control.Monad.Reader
 import           Data.Aeson.Types
 import           Data.Time
 import           Database.PostgreSQL.Simple
@@ -19,13 +20,18 @@ import           Database.PostgreSQL.Simple.FromRow
 import           Database.PostgreSQL.Simple.ToField
 import           Database.PostgreSQL.Simple.ToRow
 import           GHC.Generics
-import Servant
+import           Servant
 
-data User = User
-  { name              :: String
+newtype DbContext m a = DbContext {
+  runDbContext :: (ReaderT Connection m a)
+} deriving (Functor, Applicative, Monad, MonadReader Connection, MonadIO, MonadDb)
+
+data User = User {
+  name                :: String
   , ki                :: Int
   , registration_date :: UTCTime
-  } deriving (Eq, Show, Generic)
+} deriving (Eq, Show, Generic)
+
 instance ToJSON User
 instance FromRow User where
   fromRow = User <$> field <*> field <*> field
@@ -36,16 +42,20 @@ instance ToRow User where
     toField . ki $ user,
     toField . registration_date $ user]
 
+data DbQuery = QueryAll deriving Show
+
 class Monad m => MonadDb m where
-  runQuery :: Connection -> Query -> m [User]
+  runQuery :: DbQuery -> m [User]
 
-  default runQuery :: (MonadDb m', MonadTrans t, t m' ~ m) => Connection -> Query -> m [User]
-  runQuery conn sql = lift $ runQuery conn sql
+  default runQuery :: (MonadDb m', MonadTrans t, t m' ~ m) => DbQuery -> m [User]
+  runQuery q = lift $ runQuery q
 
-instance MonadDb IO where
-  runQuery :: Connection -> Query -> IO [User]
-  runQuery conn sql = query_ conn sql
+instance MonadIO m => MonadDb (ReaderT Connection m) where
+  runQuery :: DbQuery -> ReaderT Connection m [User]
+  runQuery q = do
+    conn <- ask
+    liftIO $ query_ conn (toSql q)
+    where
+      toSql QueryAll = "select * from users"
 
-instance MonadDb m => MonadDb (ReaderT r m)
-deriving instance MonadDb Handler
 instance MonadDb m => MonadDb (ExceptT a m)

@@ -1,22 +1,25 @@
-module Lib ( startApp ) where
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RankNTypes       #-}
+
+module Lib ( startApp, app ) where
 
 import           Control.Monad.Reader
+import           Data
 import           Database.PostgreSQL.Simple
 import           Network.Wai.Handler.Warp
 import           Routes
 import           Servant
 
-startApp :: IO ()
-startApp = run 8081 app
-  where
-    app = serve proxy $ hoistServer proxy nt routes
-    proxy = (Proxy :: Proxy APIEndpoints)
+startApp :: (MonadReader Connection m, MonadIO m) => m ()
+startApp = do
+  conn <- ask
+  liftIO $ run 8081 (app (nt' conn))
 
-nt :: AppT a -> Handler a
-nt app = do
-  conn <- liftIO $ connect defaultConnectInfo
-                { connectDatabase = "sample"
-                , connectUser     = "sample"
-                , connectPassword = "sample"
-                }
-  runReaderT (runAppM app) conn
+proxy :: Proxy APIEndpoints
+proxy = (Proxy :: Proxy APIEndpoints)
+
+app :: MonadDb m => (forall a. m a -> Handler a) -> Application
+app nt = serve proxy $ hoistServer proxy nt routes
+
+nt' :: Connection -> (AppT a -> Handler a)
+nt' conn app' = runReaderT (runDbContext (runAppM app')) conn
