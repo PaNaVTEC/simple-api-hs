@@ -1,17 +1,17 @@
-{-# LANGUAGE StandaloneDeriving #-}
-{-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE DeriveFunctor              #-}
+{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE FlexibleInstances          #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE FlexibleContexts  #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeOperators     #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE InstanceSigs               #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE StandaloneDeriving         #-}
+{-# LANGUAGE TypeOperators              #-}
 
 module Routes ( routes, APIEndpoints, AppM(..), AppT ) where
 
 import           Control.Monad.Reader
-import Control.Monad.Trans.Except
+import           Control.Monad.Trans.Except
 import           Data
 import           Data.List
 import           Database.PostgreSQL.Simple
