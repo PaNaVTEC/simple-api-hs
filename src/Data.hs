@@ -22,11 +22,16 @@ import           Database.PostgreSQL.Simple.ToRow
 import           GHC.Generics
 import           Servant
 
-data User = User
-  { name              :: String
+newtype DbContext m a = DbContext {
+  runDbContext :: (ReaderT Connection m a)
+} deriving (Functor, Applicative, Monad, MonadReader Connection, MonadIO, MonadDb)
+
+data User = User {
+  name                :: String
   , ki                :: Int
   , registration_date :: UTCTime
-  } deriving (Eq, Show, Generic)
+} deriving (Eq, Show, Generic)
+
 instance ToJSON User
 instance FromRow User where
   fromRow = User <$> field <*> field <*> field

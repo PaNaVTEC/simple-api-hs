@@ -22,4 +22,4 @@ app :: MonadDb m => (forall a. m a -> Handler a) -> Application
 app nt = serve proxy $ hoistServer proxy nt routes
 
 nt' :: Connection -> (AppT a -> Handler a)
-nt' conn app' = runReaderT (runAppM app') conn
+nt' conn app' = runReaderT (runDbContext (runAppM app')) conn

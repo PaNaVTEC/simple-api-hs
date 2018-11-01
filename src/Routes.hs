@@ -14,15 +14,14 @@ import           Control.Monad.Reader
 import           Control.Monad.Trans.Except
 import           Data
 import           Data.List
-import           Database.PostgreSQL.Simple
 import           Servant
 
 type GetJson = Get '[JSON]
 
 type AppT a = AppM Handler a
 newtype AppM m a = AppM {
-  runAppM :: ReaderT Connection m a
-} deriving (Functor, Applicative, Monad, MonadReader Connection, MonadIO, MonadDb)
+  runAppM :: DbContext m a
+} deriving (Functor, Applicative, Monad, MonadIO, MonadDb)
 
 type APIEndpoints =
   -- /users

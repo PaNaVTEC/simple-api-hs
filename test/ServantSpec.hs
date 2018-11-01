@@ -8,7 +8,6 @@ module ServantSpec (main, spec) where
 import           Control.Monad.Reader
 import           Data
 import           Data.Time.Clock.POSIX
-import           Database.PostgreSQL.Simple
 import           Lib
 import           Servant
 import           Test.Hspec
