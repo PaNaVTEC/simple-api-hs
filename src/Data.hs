@@ -37,16 +37,20 @@ instance ToRow User where
     toField . ki $ user,
     toField . registration_date $ user]
 
-class Monad m => MonadDb m where
-  runQuery :: Query -> m [User]
+data DbQuery = QueryAll deriving Show
 
-  default runQuery :: (MonadDb m', MonadTrans t, t m' ~ m) => Query -> m [User]
-  runQuery sql = lift $ runQuery sql
+class Monad m => MonadDb m where
+  runQuery :: DbQuery -> m [User]
+
+  default runQuery :: (MonadDb m', MonadTrans t, t m' ~ m) => DbQuery -> m [User]
+  runQuery q = lift $ runQuery q
 
 instance MonadIO m => MonadDb (ReaderT Connection m) where
-  runQuery :: Query -> ReaderT Connection m [User]
-  runQuery sql = do
+  runQuery :: DbQuery -> ReaderT Connection m [User]
+  runQuery q = do
     conn <- ask
-    liftIO $ query_ conn sql
+    liftIO $ query_ conn (toSql q)
+    where
+      toSql QueryAll = "select * from users"
 
 instance MonadDb m => MonadDb (ExceptT a m)

@@ -36,4 +36,4 @@ nt :: [User] -> TestM a -> Handler a
 nt users appM = runReaderT (runTestM appM) users
 
 instance MonadDb TestM where
-  runQuery q = ask
+  runQuery QueryAll = ask

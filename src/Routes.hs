@@ -47,7 +47,7 @@ instance FromHttpApiData SortBy where
   parseQueryParam _      = Left $ "Invalid parameter"
 
 allUsers :: MonadDb m => m [User]
-allUsers = runQuery "SELECT * FROM users"
+allUsers = runQuery QueryAll
 
 usersBy :: MonadDb m => Maybe SortBy -> m [User]
 usersBy Nothing     = allUsers
