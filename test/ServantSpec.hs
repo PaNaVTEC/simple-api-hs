@@ -22,14 +22,14 @@ spec = with (return $ app nt) $ do
   describe "GET users" $ do
     it "responds" $ do
       get "/users" `shouldRespondWith` 200
-      get "/users" `shouldRespondWith` [json|{"registration_date":"1970-01-01T00:00:00Z","ki":9001,"name":"Goku"}|]
+      get "/users" `shouldRespondWith` [json|[{"registration_date":"1970-01-01T00:00:00Z","ki":9001,"name":"Goku"}]|]
 
 newtype TestM a = TestM {
-  runTestM :: ReaderT Connection Handler a
-} deriving (Functor, Applicative, Monad, MonadReader Connection, MonadIO)
+  runTestM :: Handler a
+} deriving (Functor, Applicative, Monad, MonadIO)
 
 nt :: TestM a -> Handler a
-nt appM = runReaderT (runTestM appM) undefined
+nt appM = runTestM appM
 
 instance MonadDb TestM where
-  runQuery _ q = return ([User "Goku" 9001 (posixSecondsToUTCTime 0)] :: [User])
+  runQuery q = return ([User "Goku" 9001 (posixSecondsToUTCTime 0)] :: [User])

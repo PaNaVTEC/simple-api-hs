@@ -18,7 +18,7 @@ startApp = do
 proxy :: Proxy APIEndpoints
 proxy = (Proxy :: Proxy APIEndpoints)
 
-app :: (MonadReader Connection m, MonadDb m) => (forall a. m a -> Handler a) -> Application
+app :: MonadDb m => (forall a. m a -> Handler a) -> Application
 app nt = serve proxy $ hoistServer proxy nt routes
 
 nt' :: Connection -> (AppM Handler a -> Handler a)
