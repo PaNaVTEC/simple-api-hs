@@ -43,11 +43,10 @@ class Monad m => MonadDb m where
   default runQuery :: (MonadDb m', MonadTrans t, t m' ~ m) => Query -> m [User]
   runQuery sql = lift $ runQuery sql
 
-instance MonadDb (ReaderT Connection IO) where
-  runQuery :: Query -> ReaderT Connection IO [User]
+instance MonadIO m => MonadDb (ReaderT Connection m) where
+  runQuery :: Query -> ReaderT Connection m [User]
   runQuery sql = do
     conn <- ask
     liftIO $ query_ conn sql
 
-instance MonadDb m => MonadDb (ReaderT r m)
 instance MonadDb m => MonadDb (ExceptT a m)

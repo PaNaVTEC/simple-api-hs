@@ -22,16 +22,7 @@ type GetJson = Get '[JSON]
 type AppT a = AppM Handler a
 newtype AppM m a = AppM {
   runAppM :: ReaderT Connection m a
-} deriving (Functor, Applicative, Monad, MonadReader Connection, MonadIO)
-
-instance MonadDb (AppM Handler) where
-  runQuery sql = do
-    conn <- ask
-    liftIO $ query_ conn sql
-
-instance MonadTrans AppM where
-  lift :: Monad m => m a -> AppM m a
-  lift ma = AppM . lift $ ma
+} deriving (Functor, Applicative, Monad, MonadReader Connection, MonadIO, MonadDb, MonadTrans)
 
 type APIEndpoints =
   -- /users
