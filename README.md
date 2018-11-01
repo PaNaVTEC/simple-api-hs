@@ -5,6 +5,7 @@ This simple project demostrates how to create a really simple API using Haskell 
 Developed by
 ============
 Carlos Morera de la Chica - <a href="https://carlosmchica.github.io/">https://carlosmchica.github.io/</a> - <a href="https://twitter.com/carlosmchica">@CarlosMChica</a>
+
 Christian Panadero Martinez - <a href="http://panavtec.me">http://panavtec.me</a> - <a href="https://twitter.com/panavtec">@PaNaVTEC</a>
 
 License
