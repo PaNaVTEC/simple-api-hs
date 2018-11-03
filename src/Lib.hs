@@ -3,6 +3,7 @@
 
 module Lib ( startApp , app ) where
 
+import           Control.Monad.Logger
 import           Control.Monad.Reader
 import           Data
 import           Database.PostgreSQL.Simple
@@ -10,7 +11,7 @@ import           Network.Wai.Handler.Warp
 import           Routes
 import           Servant
 
-app :: MonadDb m => (forall a. m a -> Handler a) -> Application
+app :: (MonadLogger m, MonadDb m) => (forall a. m a -> Handler a) -> Application
 app nt = serve proxy $ hoistServer proxy nt routes
   where proxy = (Proxy :: Proxy APIEndpoints)
 
@@ -20,7 +21,7 @@ startApp = do
   run 8081 $ app (ntAppT conn)
   where
     ntAppT :: Connection -> AppT a -> Handler a
-    ntAppT conn appT = runReaderT (runDbContext (runAppM appT)) conn
+    ntAppT conn appT = runReaderT (runDbContext (runStderrLoggingT . runAppM $ appT)) $ conn
 
 prodConn :: IO Connection
 prodConn = connect defaultConnectInfo
