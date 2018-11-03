@@ -10,8 +10,8 @@
 
 module Data where
 
+import           Control.Monad.Logger
 import           Control.Monad.Reader
-import           Control.Monad.Trans
 import           Control.Monad.Trans.Except
 import           Data.Aeson.Types
 import           Data.Time
@@ -20,7 +20,6 @@ import           Database.PostgreSQL.Simple.FromRow
 import           Database.PostgreSQL.Simple.ToField
 import           Database.PostgreSQL.Simple.ToRow
 import           GHC.Generics
-import           Servant
 
 newtype DbContext m a = DbContext {
   runDbContext :: (ReaderT Connection m a)
@@ -59,3 +58,4 @@ instance MonadIO m => MonadDb (ReaderT Connection m) where
       toSql QueryAll = "select * from users"
 
 instance MonadDb m => MonadDb (ExceptT a m)
+instance MonadDb m => MonadDb (LoggingT m)

@@ -31,6 +31,8 @@ dependencies:
 - transformers
 - postgresql-simple
 - hspec
+- monad-logger
+- bytestring
 
 library:
   source-dirs: src
@@ -59,3 +61,5 @@ tests:
     - hspec
     - hspec-wai
     - hspec-wai-json
+    - bytestring
+    - monad-logger

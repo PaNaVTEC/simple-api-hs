@@ -10,8 +10,8 @@
 
 module Routes ( routes, APIEndpoints, AppM(..), AppT ) where
 
+import           Control.Monad.Logger
 import           Control.Monad.Reader
-import           Control.Monad.Trans.Except
 import           Data
 import           Data.List
 import           Servant
@@ -20,8 +20,8 @@ type GetJson = Get '[JSON]
 
 type AppT a = AppM Handler a
 newtype AppM m a = AppM {
-  runAppM :: DbContext m a
-} deriving (Functor, Applicative, Monad, MonadIO, MonadDb)
+  runAppM :: LoggingT (DbContext m) a
+} deriving (Functor, Applicative, Monad, MonadIO, MonadDb, MonadLogger)
 
 type APIEndpoints =
   -- /users
@@ -36,7 +36,7 @@ type APIEndpoints =
   -- /user/:username
   :<|> "user" :> Capture "username" String :> GetJson (Maybe User)
 
-routes :: MonadDb m => ServerT APIEndpoints m
+routes :: (MonadLogger m, MonadDb m) => ServerT APIEndpoints m
 routes = allUsers :<|> usersBy :<|> usersSortedByKi :<|> userByName
 
 data SortBy = Ki | Name
@@ -45,10 +45,12 @@ instance FromHttpApiData SortBy where
   parseQueryParam "name" = Right Name
   parseQueryParam _      = Left $ "Invalid parameter"
 
-allUsers :: MonadDb m => m [User]
-allUsers = runQuery QueryAll
+allUsers :: (MonadLogger m, MonadDb m) => m [User]
+allUsers = do
+  logInfoN "/users"
+  runQuery QueryAll
 
-usersBy :: MonadDb m => Maybe SortBy -> m [User]
+usersBy :: (MonadLogger m, MonadDb m) => Maybe SortBy -> m [User]
 usersBy Nothing     = allUsers
 usersBy (Just Ki)   = do
   users <- allUsers
@@ -57,12 +59,12 @@ usersBy (Just Name) = do
   users <- allUsers
   return (sortOn name users)
 
-usersSortedByKi :: MonadDb m => m [User]
+usersSortedByKi :: (MonadLogger m, MonadDb m) => m [User]
 usersSortedByKi = do
   users <- allUsers
   return (sortOn ki users)
 
-userByName :: MonadDb m => String -> m (Maybe User)
+userByName :: (MonadLogger m, MonadDb m) => String -> m (Maybe User)
 userByName userName = do
   users <- allUsers
   return $ find byUserName users

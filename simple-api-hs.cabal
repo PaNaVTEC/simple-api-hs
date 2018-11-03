@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 23a7b874bf203400c35759b09adc8644bafa3e9c04588a65d5a3cf78e99d462f
+-- hash: 942e243971140c1b84ea9289c674a90a13cb5fa1c89a408118d1a4c08512d6a4
 
 name:           simple-api-hs
 version:        0.1.0.0
@@ -37,7 +37,9 @@ library
   build-depends:
       aeson
     , base >=4.7 && <5
+    , bytestring
     , hspec
+    , monad-logger
     , mtl
     , postgresql-simple
     , servant-server
@@ -58,7 +60,9 @@ executable simple-api-hs-exe
   build-depends:
       aeson
     , base >=4.7 && <5
+    , bytestring
     , hspec
+    , monad-logger
     , mtl
     , postgresql-simple
     , servant-server
@@ -82,9 +86,11 @@ test-suite simple-api-hs-test
   build-depends:
       aeson
     , base >=4.7 && <5
+    , bytestring
     , hspec
     , hspec-wai
     , hspec-wai-json
+    , monad-logger
     , mtl
     , postgresql-simple
     , servant-server
