@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RankNTypes       #-}
 
-module Lib ( startApp, app ) where
+module Lib ( startApp , app ) where
 
 import           Control.Monad.Reader
 import           Data
@@ -10,10 +10,7 @@ import           Network.Wai.Handler.Warp
 import           Routes
 import           Servant
 
-startApp :: (MonadReader Connection m, MonadIO m) => m ()
-startApp = do
-  conn <- ask
-  liftIO $ run 8081 (app (nt' conn))
+-- ServantApp with abstract database access in IO
 
 proxy :: Proxy APIEndpoints
 proxy = (Proxy :: Proxy APIEndpoints)
@@ -21,5 +18,19 @@ proxy = (Proxy :: Proxy APIEndpoints)
 app :: MonadDb m => (forall a. m a -> Handler a) -> Application
 app nt = serve proxy $ hoistServer proxy nt routes
 
-nt' :: Connection -> (AppT a -> Handler a)
-nt' conn app' = runReaderT (runDbContext (runAppM app')) conn
+-- ServantApp wrapped with postgress in another layer of IO
+
+startApp :: IO ()
+startApp = do
+  conn <- prodConn
+  run 8081 (app (ntAppT conn))
+
+ntAppT :: Connection -> AppT a -> Handler a
+ntAppT conn appT = runReaderT (runDbContext (runAppM appT)) conn
+
+prodConn :: IO Connection
+prodConn = connect defaultConnectInfo
+             { connectDatabase = "sample"
+             , connectUser     = "sample"
+             , connectPassword = "sample"
+             }
